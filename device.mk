@@ -44,8 +44,8 @@ PRODUCT_COPY_FILES := \
 # Modules
 PRODUCT_COPY_FILES += \
     device/notionink/adam/modules/scsi_wait_scan.ko:system/lib/modules/scsi_wait_scan.ko \
-    device/notionink/adam/modules/tun.ko:system/lib/modules/tun.ko \
-    device/notionink/adam/modules/bcm4329.ko:system/lib/modules/bcm4329.ko
+    device/notionink/adam/modules/tun.ko:system/lib/modules/tun.ko #\
+    #device/notionink/adam/modules/bcm4329.ko:system/lib/modules/bcm4329.ko
 
 # Bluetooth
 PRODUCT_COPY_FILES += \
@@ -143,3 +143,5 @@ endif
 
 $(call inherit-product, frameworks/base/build/tablet-dalvik-heap.mk)
 $(call inherit-product, vendor/notionink/adam/device-vendor.mk)
+
+$(call inherit-product-if-exists, hardware/broadcom/wlan/bcmdhd/firmware/bcm4329/device-bcm.mk)
