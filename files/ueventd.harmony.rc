@@ -3,10 +3,13 @@
 /dev/tegra_avp   0660   media   media
 /dev/tegra_rpc   0660   media   media
 /dev/tegra_sema   0660   media   media
+/dev/tegra_mediaserver	0660	media	media
 /dev/tegra_camera   0660   media   camera
 /dev/spdif*   0660   system   audio
 /dev/ttyACM*   0777   radio   system
 /dev/ttyHS*   0660   radio   system
+/dev/video0	0660	media	camera
+/dev/video1	0660	media	camera
 /dev/tegra_dc*   0660   system   system
 /sys/devices/platform/bcm4329_rfkill/rfkill/rfkill*   state   0666   radio   system
 /sys/devices/platform/tegra_uart.2/tty/ttyHS2/hci0/rfkill*   state   0666   radio   system

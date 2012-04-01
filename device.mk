@@ -88,7 +88,8 @@ PRODUCT_PACKAGES += \
 	sensors.harmony \
 	lights.harmony \
 	gps.harmony \
-	libmbm-ril
+	libmbm-ril \
+	camera.tegra
         
 # These are the hardware-specific feature permissions
 PRODUCT_COPY_FILES += \
