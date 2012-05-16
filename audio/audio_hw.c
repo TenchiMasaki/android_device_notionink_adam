@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2011 The Android Open Source Project
- * Copyright (C) 2011 Eduardo José Tagle <ejtagle@tutopia.com>
+ * Copyright (C) 2011 Eduardo Jose Tagle <ejtagle@tutopia.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,6 +106,9 @@
 /* sampling rate when using MM full power port */
 #define MM_FULL_POWER_SAMPLING_RATE 48000
 
+/* sampling rate when using VOICE (=Bluetooth) port */
+#define MM_VOICE_SAMPLING_RATE 8000
+
 /* conversions from Percent to codec gains */
 #define PERC_TO_PCM_VOLUME(x)     ( (int)((x) * 31 )) 
 #define PERC_TO_CAPTURE_VOLUME(x) ( (int)((x) * 31 )) 
@@ -209,7 +212,6 @@ struct route_setting defaults[] = {
 
 struct mixer_ctls
 {
-	
     struct mixer_ctl *pcm_volume;
     struct mixer_ctl *pcm_cap_volume;
     struct mixer_ctl *headset_volume;
@@ -223,7 +225,6 @@ struct mixer_ctls
     struct mixer_ctl *SpkMux;
     struct mixer_ctl *HPEnDAC;
     struct mixer_ctl *SpkEnDAC;
-
 };
 
 struct adam_audio_device {
@@ -399,6 +400,13 @@ static int start_output_stream(struct adam_stream_out *out)
     if(adev->devices & AUDIO_DEVICE_OUT_AUX_DIGITAL) {
         port = PORT_SPDIF;
         //out->config.rate = MM_LOW_POWER_SAMPLING_RATE;
+    }
+	
+	/* If outputtting to Bluetooth, refirect audio to it */
+    if (adev->devices & AUDIO_DEVICE_OUT_ALL_SCO) {
+		LOGD("Using BT SCO");
+		port = PORT_VOICE;
+		out->config.rate = MM_VOICE_SAMPLING_RATE;
     }
 	
     /* default to low power: will be corrected in out_write if necessary before first write to
@@ -677,10 +685,11 @@ static int out_set_parameters(struct audio_stream *stream, const char *kvpairs)
 			mixer_ctl_set_value(adev->mixer_ctls.headset_switch, 0,
 				(val & AUDIO_DEVICE_OUT_WIRED_HEADPHONE) ? 1 : 0);
 				
-			LOGD("Headphone out:%c, Speaker out:%c, HDMI out:%c\n",
+			LOGD("Headphone out:%c, Speaker out:%c, HDMI out:%c, BT SCO: %c\n",
 				(val & AUDIO_DEVICE_OUT_WIRED_HEADPHONE) ? 'Y' : 'N',
 				(val & AUDIO_DEVICE_OUT_SPEAKER) ? 'Y' : 'N',
-				(val & AUDIO_DEVICE_OUT_AUX_DIGITAL) ? 'Y' : 'N'
+				(val & AUDIO_DEVICE_OUT_AUX_DIGITAL) ? 'Y' : 'N',
+				(val & AUDIO_DEVICE_OUT_ALL_SCO) ? 'Y' : 'N'
 				);
 				
             adev->devices &= ~AUDIO_DEVICE_OUT_ALL;
@@ -1823,9 +1832,11 @@ static uint32_t adev_get_supported_devices(const struct audio_hw_device *dev)
             AUDIO_DEVICE_OUT_SPEAKER |
             AUDIO_DEVICE_OUT_WIRED_HEADPHONE |
             AUDIO_DEVICE_OUT_AUX_DIGITAL |
+			AUDIO_DEVICE_OUT_ALL_SCO |
             AUDIO_DEVICE_OUT_DEFAULT |
             /* IN */
             AUDIO_DEVICE_IN_BUILTIN_MIC |
+			AUDIO_DEVICE_IN_ALL_SCO |
             AUDIO_DEVICE_IN_DEFAULT);
 }
 
