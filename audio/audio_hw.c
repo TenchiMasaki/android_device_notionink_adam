@@ -336,7 +336,7 @@ static int set_route_by_array(struct mixer *mixer, struct route_setting *route,
 static void force_all_standby(struct adam_audio_device *adev)
 {
 	LOGD("force_all_standby");
-	
+
     struct adam_stream_in *in;
     struct adam_stream_out *out;
 
@@ -358,7 +358,7 @@ static void force_all_standby(struct adam_audio_device *adev)
 static void select_mode(struct adam_audio_device *adev)
 {
 	LOGD("select_mode: %x",adev->mode);
-	
+
 	/*Those are different modes within the system. You are usually in 
  	 MODE_NORMAL. When someone calls you, it enters MODE_RINGTONE. When you 
 	 answer a call or you initiated a call then you enter MODE_IN_CALL. I 
@@ -370,7 +370,7 @@ static void select_mode(struct adam_audio_device *adev)
 	 MODE_IN_CALL you are routine the voice path from the modem to 
 	 speakers/headset and mic to modem.
 	*/
-	
+
     if (adev->mode == AUDIO_MODE_IN_CALL) {
         LOGE("Entering IN_CALL state, in_call=%d", adev->in_call);
         if (!adev->in_call) {
@@ -401,14 +401,14 @@ static int start_output_stream(struct adam_stream_out *out)
         port = PORT_SPDIF;
         //out->config.rate = MM_LOW_POWER_SAMPLING_RATE;
     }
-	
+
 	/* If outputtting to Bluetooth, refirect audio to it */
     if (adev->devices & AUDIO_DEVICE_OUT_ALL_SCO) {
 		LOGD("Using BT SCO");
 		port = PORT_VOICE;
 		out->config.rate = MM_VOICE_SAMPLING_RATE;
     }
-	
+
     /* default to low power: will be corrected in out_write if necessary before first write to
      * tinyalsa. */
     out->write_threshold = PLAYBACK_LONG_PERIOD_COUNT * LONG_PERIOD_SIZE;
@@ -417,7 +417,7 @@ static int start_output_stream(struct adam_stream_out *out)
 	out->low_power = 1;
 
 	LOGD("start_output_stream: card:%d, port:%d, rate:%d",card,port,out->config.rate);
-	
+
     out->pcm = pcm_open(card, port, PCM_OUT | PCM_MMAP | PCM_NOIRQ, &out->config);
 
     if (!pcm_is_ready(out->pcm)) {
@@ -438,7 +438,7 @@ static int start_output_stream(struct adam_stream_out *out)
 static int check_input_parameters(uint32_t sample_rate, int format, int channel_count)
 {
 	LOGD("check_input_parameters: rate:%d, format:%d, count:%d",sample_rate,format,channel_count);
-	
+
     if (format != AUDIO_FORMAT_PCM_16_BIT)
         return -EINVAL;
 
@@ -466,7 +466,7 @@ static size_t get_input_buffer_size(uint32_t sample_rate, int format, int channe
 {
     size_t size;
     size_t device_rate;
-	
+
 	LOGD("get_input_buffer_size: rate:%d, format:%d, count:%d",sample_rate,format,channel_count);
 
     if (check_input_parameters(sample_rate, format, channel_count) != 0)
@@ -662,7 +662,7 @@ static int out_set_parameters(struct audio_stream *stream, const char *kvpairs)
     int ret, val = 0;
 
 	LOGD("out_set_parameters: kvpairs:%s\n",kvpairs);
-	
+
     parms = str_parms_create_str(kvpairs);
 
     ret = str_parms_get_str(parms, AUDIO_PARAMETER_STREAM_ROUTING, value, sizeof(value));
@@ -677,21 +677,21 @@ static int out_set_parameters(struct audio_stream *stream, const char *kvpairs)
 					(adev->devices & AUDIO_DEVICE_OUT_AUX_DIGITAL)) )
                     do_output_standby(out);
             }
-			
+
 			/* Switch between speaker and headphone if required */
 			mixer_ctl_set_value(adev->mixer_ctls.speaker_switch, 0,
 				(val & AUDIO_DEVICE_OUT_SPEAKER) ? 1 : 0);
 
 			mixer_ctl_set_value(adev->mixer_ctls.headset_switch, 0,
 				(val & AUDIO_DEVICE_OUT_WIRED_HEADPHONE) ? 1 : 0);
-				
+
 			LOGD("Headphone out:%c, Speaker out:%c, HDMI out:%c, BT SCO: %c\n",
 				(val & AUDIO_DEVICE_OUT_WIRED_HEADPHONE) ? 'Y' : 'N',
 				(val & AUDIO_DEVICE_OUT_SPEAKER) ? 'Y' : 'N',
 				(val & AUDIO_DEVICE_OUT_AUX_DIGITAL) ? 'Y' : 'N',
 				(val & AUDIO_DEVICE_OUT_ALL_SCO) ? 'Y' : 'N'
 				);
-				
+
             adev->devices &= ~AUDIO_DEVICE_OUT_ALL;
             adev->devices |= val;
         }
@@ -723,14 +723,14 @@ static int out_set_volume(struct audio_stream_out *stream, float left,
 {
     struct adam_stream_out *out = (struct adam_stream_out *)stream;
     struct adam_audio_device *adev = out->dev;
-	
+
 	LOGD("out_set_volume: left:%f, right:%f\n",left,right);
 
 	mixer_ctl_set_value(adev->mixer_ctls.speaker_volume, 0,
 		PERC_TO_SPEAKER_VOLUME(left));
 	mixer_ctl_set_value(adev->mixer_ctls.speaker_volume, 1,
 		PERC_TO_SPEAKER_VOLUME(right));
-		
+
 	mixer_ctl_set_value(adev->mixer_ctls.headset_volume, 0,
 		PERC_TO_HEADSET_VOLUME(left));
 	mixer_ctl_set_value(adev->mixer_ctls.headset_volume, 1,
@@ -753,7 +753,7 @@ static ssize_t out_write(struct audio_stream_out *stream, const void* buffer,
 	bool low_power;
     int kernel_frames;
     void *buf;
-	
+
 	/*LOGD("out_write: size:%d\n",bytes);*/
 
     /* acquiring hw device mutex systematically is useful if a low priority thread is waiting
@@ -770,11 +770,11 @@ static ssize_t out_write(struct audio_stream_out *stream, const void* buffer,
         }
         out->standby = 0;
     }
-	
+
 	/* Low power playback is allowed if system is in low power and we are not recording audio */
 	low_power = adev->low_power && !adev->active_input;
     pthread_mutex_unlock(&adev->lock);
-	
+
 	 if (low_power != out->low_power) {
         if (low_power) {
             out->write_threshold = LONG_PERIOD_SIZE * PLAYBACK_LONG_PERIOD_COUNT;
@@ -1049,7 +1049,7 @@ static int in_set_gain(struct audio_stream_in *stream, float gain)
     struct adam_audio_device *adev = in->dev;
 
 	unsigned int channel;
-	
+
     for (channel = 0; channel < 2; channel++) {
         mixer_ctl_set_value(adev->mixer_ctls.mic_volume, channel,
             PERC_TO_CAPTURE_VOLUME(gain));
@@ -1512,7 +1512,7 @@ static int adev_open_output_stream(struct audio_hw_device *dev,
     int ret;
 
 	LOGD("adev_open_output_stream");
-	
+
     out = (struct adam_stream_out *)calloc(1, sizeof(struct adam_stream_out));
     if (!out)
         return -ENOMEM;
@@ -1576,7 +1576,7 @@ static void adev_close_output_stream(struct audio_hw_device *dev,
     struct adam_stream_out *out = (struct adam_stream_out *)stream;
 
 	LOGD("adev_close_output_stream");
-	
+
     out_standby(&stream->common);
     if (out->buffer)
         free(out->buffer);
@@ -1597,7 +1597,7 @@ static int adev_set_parameters(struct audio_hw_device *dev, const char *kvpairs)
 	LOGD("adev_set_parameters: kppairs: %s", kvpairs);
 
     parms = str_parms_create_str(kvpairs);
-	
+
 	/* Get the screen state as system power indicator */
 	ret = str_parms_get_str(parms, "screen_state", value, sizeof(value));
     if (ret >= 0) {
@@ -1606,9 +1606,9 @@ static int adev_set_parameters(struct audio_hw_device *dev, const char *kvpairs)
         else
             adev->low_power = true;
     }
-	
+
     str_parms_destroy(parms);
-	
+
     return ret;
 }
 
@@ -1629,9 +1629,9 @@ static int adev_init_check(const struct audio_hw_device *dev)
 static int adev_set_voice_volume(struct audio_hw_device *dev, float volume)
 {
     struct adam_audio_device *adev = (struct adam_audio_device *)dev;
-	
+
 	LOGD("adev_set_voice_volume: volume: %f", volume);
-	
+
     return 0;
 }
 
@@ -1641,7 +1641,7 @@ static int adev_set_master_volume(struct audio_hw_device *dev, float volume)
 	struct adam_audio_device *adev = (struct adam_audio_device *)dev;
 
 	LOGD("adev_set_master_volume: volume: %f", volume);
-	
+
 	mixer_ctl_set_value(adev->mixer_ctls.pcm_volume, 0,
 		PERC_TO_PCM_VOLUME(volume));
 	mixer_ctl_set_value(adev->mixer_ctls.pcm_volume, 1,
@@ -1656,7 +1656,7 @@ static int adev_set_mode(struct audio_hw_device *dev, int mode)
     struct adam_audio_device *adev = (struct adam_audio_device *)dev;
 
 	LOGD("adev_set_mode: mode: %d", mode);
-	
+
     pthread_mutex_lock(&adev->lock);
     if (adev->mode != mode) {
         adev->mode = mode;
@@ -1673,12 +1673,12 @@ static int adev_set_mic_mute(struct audio_hw_device *dev, bool state)
     struct adam_audio_device *adev = (struct adam_audio_device *)dev;
 
 	LOGD("adev_set_mic_mute: state: %d", state);
-	
+
     adev->mic_mute = state;
 
 	/* Disable mic if requested */
 	mixer_ctl_set_value(adev->mixer_ctls.mic_switch, 0,	state ? 0 : 1);
-	
+
     return 0;
 }
 
@@ -1699,7 +1699,7 @@ static size_t adev_get_input_buffer_size(const struct audio_hw_device *dev,
 {
     size_t size;
 	LOGD("adev_get_input_buffer_size: sample_rate: %d, format: %d, channel_count:%d", sample_rate, format, channel_count);
-	
+
     if (check_input_parameters(sample_rate, format, channel_count) != 0)
         return 0;
 
@@ -1716,10 +1716,12 @@ static int adev_open_input_stream(struct audio_hw_device *dev, uint32_t devices,
     struct adam_audio_device *ladev = (struct adam_audio_device *)dev;
     struct adam_stream_in *in;
     int ret;
-    int channel_count = popcount(*channel_mask);
+    //Use always channel count 2 since audio get distorted
+    //int channel_count = popcount(*channel_mask);
+    int channel_count = 2;
 
 	LOGD("adev_open_input_stream: channel_count:%d", channel_count);
-	
+
     if (check_input_parameters(*sample_rate, *format, channel_count) != 0)
         return -EINVAL;
 
@@ -1794,7 +1796,7 @@ static void adev_close_input_stream(struct audio_hw_device *dev,
     struct adam_stream_in *in = (struct adam_stream_in *)stream;
 
 	LOGD("adev_close_input_stream");
-	
+
     in_standby(&stream->common);
 
     if (in->resampler) {
@@ -1816,7 +1818,7 @@ static int adev_dump(const audio_hw_device_t *device, int fd)
 static int adev_close(hw_device_t *device)
 {
     struct adam_audio_device *adev = (struct adam_audio_device *)device;
-	
+
 	LOGD("adev_close");
 
     mixer_close(adev->mixer);
@@ -1847,7 +1849,7 @@ static int adev_open(const hw_module_t* module, const char* name,
     int ret;
 
 	LOGE("adev_open: name:'%s'",name);
-	
+
     if (strcmp(name, AUDIO_HARDWARE_INTERFACE) != 0)
         return -EINVAL;
 
@@ -1889,7 +1891,7 @@ static int adev_open(const hw_module_t* module, const char* name,
 		LOGE("Unable to find '%s' mixer control",MIXER_MIC_CAPTURE_VOLUME);
 		goto error_out;
 	}
-	
+
     adev->mixer_ctls.pcm_volume = mixer_get_ctl_by_name(adev->mixer,
                                            MIXER_PCM_PLAYBACK_VOLUME);
 	if (!adev->mixer_ctls.pcm_volume) { 
@@ -1903,14 +1905,14 @@ static int adev_open(const hw_module_t* module, const char* name,
 		LOGE("Unable to find '%s' mixer control", MIXER_PCM_CAPTURE_VOLUME);
 		goto error_out;
 	}
-										   
+
     adev->mixer_ctls.headset_volume = mixer_get_ctl_by_name(adev->mixer,
                                            MIXER_HEADSET_PLAYBACK_VOLUME);
 	if (!adev->mixer_ctls.headset_volume) { 
 		LOGE("Unable to find '%s' mixer control",MIXER_HEADSET_PLAYBACK_VOLUME);
 		goto error_out;
 	}
-										   
+
     adev->mixer_ctls.speaker_volume = mixer_get_ctl_by_name(adev->mixer,
                                            MIXER_SPEAKER_PLAYBACK_VOLUME);
 	if (!adev->mixer_ctls.speaker_volume) { 
@@ -1924,14 +1926,14 @@ static int adev_open(const hw_module_t* module, const char* name,
 		LOGE("Unable to find '%s' mixer control",MIXER_MIC_CAPTURE_SWITCH);
 		goto error_out;
 	}
-	
+
     adev->mixer_ctls.headset_switch = mixer_get_ctl_by_name(adev->mixer,
                                            MIXER_HEADSET_PLAYBACK_SWITCH);
 	if (!adev->mixer_ctls.headset_switch) { 
 		LOGE("Unable to find '%s' mixer control",MIXER_HEADSET_PLAYBACK_SWITCH);
 		goto error_out;
 	}
-										   
+
     adev->mixer_ctls.speaker_switch = mixer_get_ctl_by_name(adev->mixer,
                                            MIXER_SPEAKER_PLAYBACK_SWITCH);
 	if (!adev->mixer_ctls.speaker_switch) { 
@@ -1976,7 +1978,7 @@ error_out:
     mixer_close(adev->mixer);
     free(adev);
     return -EINVAL;
-	
+
 }
 
 static struct hw_module_methods_t hal_module_methods = {
