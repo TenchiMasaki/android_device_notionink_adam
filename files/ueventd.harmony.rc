@@ -13,3 +13,6 @@
 /dev/tegra_dc*   0660   system   system
 /sys/devices/platform/bcm4329_rfkill/rfkill/rfkill*   state   0666   radio   system
 /sys/devices/platform/tegra_uart.2/tty/ttyHS2/hci0/rfkill*   state   0666   radio   system
+
+# For USB 3G modems
+/dev/ttyUSB* 0777   radio system

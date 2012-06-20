@@ -65,6 +65,11 @@ PRODUCT_COPY_FILES += \
 # APNs list
 PRODUCT_COPY_FILES += \
    device/notionink/adam/files/apns-conf.xml:system/etc/apns-conf.xml
+   
+# Some files for 3G
+PRODUCT_COPY_FILES += \
+    device/notionink/adam/files/ppp/ip-up:/system/etc/ppp/ip-up \
+    device/notionink/adam/files/ppp/ip-down:/system/etc/ppp/ip-down
 
 PRODUCT_PROPERTY_OVERRIDES := \
     wifi.interface=wlan0 \
@@ -89,6 +94,7 @@ PRODUCT_PACKAGES += \
 	lights.harmony \
 	gps.harmony \
 	libmbm-ril \
+	libhuaweigeneric-ril \
 	camera.tegra
         
 # These are the hardware-specific feature permissions
