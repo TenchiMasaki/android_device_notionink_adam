@@ -69,8 +69,9 @@ PRODUCT_COPY_FILES += \
 # Some files for 3G
 PRODUCT_COPY_FILES += \
     device/notionink/adam/files/ppp/ip-up:/system/etc/ppp/ip-up \
-    device/notionink/adam/files/ppp/ip-down:/system/etc/ppp/ip-down
-
+    device/notionink/adam/files/ppp/ip-down:/system/etc/ppp/ip-down \
+    device/notionink/adam/files/wwlan_select.sh:/system/bin/wwlan_select.sh
+   
 PRODUCT_PROPERTY_OVERRIDES := \
     wifi.interface=wlan0 \
     ro.sf.lcd_density=120 \

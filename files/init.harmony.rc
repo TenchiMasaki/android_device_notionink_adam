@@ -172,3 +172,10 @@ service hciattach /system/bin/brcm_patchram_plus --enable_hci \
 #
 #on property:net.netdump.enable=0
 #    stop netdump-service
+
+# 3G library selection
+service wwlanselet /system/bin/wwlan_select.sh
+    class late_start
+    user root
+    group root
+    oneshot
