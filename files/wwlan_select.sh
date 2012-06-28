@@ -1,6 +1,6 @@
 #!/system/bin/mksh
-#DEBUG_LOG=/data/wwlan_select.log
-DEBUG_LOG=/dev/null
+DEBUG_LOG=/data/wwlan_select.log
+#DEBUG_LOG=/dev/null
 
 # idVendor    idProduct   module
 #   05c6        6000      X8133/WM700g/WU500/EA100
@@ -19,7 +19,7 @@ VPList=( \
 
 VPListNum=${#VPList[*]}
 
-IndexTotal=$((VPListNum / 3 - 1))
+IndexTotal=$((VPListNum / 4 - 1))
 
 for Vendor in `ls /sys/bus/usb/devices/*/idVendor /sys/bus/usb/devices/*/*/idVendor 2> /dev/null`
 do
@@ -33,9 +33,9 @@ do
 			idVendor=$idVendortemp
 			break 2
 			;;
-		${VPList[$((index * 3))]})
+		${VPList[$((index * 4))]})
 			case "$idProducttemp" in
-			${VPList[$((index * 3 + 1))]})
+			${VPList[$((index * 4 + 1))]})
 				idVendor=$idVendortemp
 				idProduct=$idProducttemp
 				break 2
@@ -110,3 +110,4 @@ case "$idVendor" in
 	setprop ctl.stop ril-daemon
 	;;
 esac
+

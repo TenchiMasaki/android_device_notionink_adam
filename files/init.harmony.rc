@@ -174,8 +174,31 @@ service hciattach /system/bin/brcm_patchram_plus --enable_hci \
 #    stop netdump-service
 
 # 3G library selection
-service wwlanselet /system/bin/wwlan_select.sh
-    class late_start
+service wwlanselect /system/bin/sh /system/bin/wwlan_select.sh
+    disabled
+    class main
     user root
-    group root
+    group shell
     oneshot
+
+on device-added-/dev/ttyUSB0
+    start wwlanselect
+on device-added-/dev/ttyUSB1
+    start wwlanselect
+on device-added-/dev/ttyUSB2
+    start wwlanselect
+on device-added-/dev/ttyUSB3
+    start wwlanselect
+
+on device-removed-/dev/ttyUSB0
+    stop ril-daemon
+on device-removed-/dev/ttyUSB1
+    stop ril-daemon
+on device-removed-/dev/ttyUSB2
+    stop ril-daemon
+on device-removed-/dev/ttyUSB3
+    stop ril-daemon
+
+on property:init.svc.bootanim=stopped
+    start wwlanselect
+
