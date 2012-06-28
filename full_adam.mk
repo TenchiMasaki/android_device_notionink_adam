@@ -18,8 +18,11 @@ PRODUCT_PACKAGES := \
     SpareParts \
     PQiToggle \
     Development \
-	Stk \
-	Mms
+    Stk \
+    Mms \
+    Superuser \
+    Trebuchet \
+    su
 
 $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base.mk)
 
