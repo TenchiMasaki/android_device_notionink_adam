@@ -83,6 +83,14 @@ PRODUCT_PACKAGES += \
         LiveWallpapersPicker \
         VisualizationWallpapers
 
+# Themes
+PRODUCT_PACKAGES += \
+        ThemeManager \
+        ThemeChooser \
+        com.tmobile.themes \
+        Androidian \
+        Cyanbread
+
 #Audio
 PRODUCT_PACKAGES += \
         audio.a2dp.default \
