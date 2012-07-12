@@ -107,7 +107,7 @@
     </integer-array>
 
     <string-array translatable="false" name="config_tether_usb_regexs">
-		<item>"rndis0"</item>
+	<item>"rndis0"</item>
     </string-array>
     <!-- List of regexpressions describing the interface (if any) that represent tetherable  Wifi interfaces. If the device doesn't want to support tethering over Wifi this  should be empty. An example would be "softap.*" -->
     <string-array translatable="false" name="config_tether_wifi_regexs">
@@ -124,9 +124,28 @@
         <item>7</item>  
     </integer-array>
 
-    <string name="config_networkLocationProvider">com.google.android.location.NetworkLocationProvider</string>
+    <!-- Boolean indicating whether the wifi chipset has dual frequency band support -->
+    <bool translatable="false" name="config_wifi_dual_band_support">true</bool>
 
-   <string name="config_geocodeProvider">com.google.android.location.GeocodeProvider</string>
+    <!-- Package name providing network location support. -->
+    <string name="config_networkLocationProviderPackageName" translatable="false">com.google.android.location</string>
+
+    <!-- Package name providing geocoder API support. -->
+    <string name="config_geocodeProviderPackageName" translatable="false">com.google.android.location</string>
+
+    <!-- List of file paths for USB host busses to exclude from USB host support.
+         For example, if the first USB bus on the device is used to communicate
+         with the modem or some other restricted hardware, add "/dev/bus/usb/001/"
+         to this list.  If this is empty, no parts of the host USB bus will be excluded.
+    -->
+    <string-array name="config_usbHostBlacklist">
+        <!--  /dev/bus/usb/002 is the external bus. Exclude the others.
+              NOTE: on stingray 002 is the 3G modem, and the external bus is 003,
+              so we have a different variant of this in the stingray overlay.
+   -->
+        <item>/dev/bus/usb/001</item>
+    </string-array>
+
     <!-- XXXXX NOTE THE FOLLOWING RESOURCES USE THE WRONG NAMING CONVENTION.
          Please don't copy them, copy anything else. -->
 
@@ -166,5 +185,43 @@
     <!-- Device type information conforming to Annex B format in WiFi Direct specification.
          The default represents a dual-mode smartphone -->
     <string translatable="false" name="config_wifi_p2p_device_type">10-0050F204-5</string>
+
+    <!-- Enable puk unlockscreen -->
+    <bool name="config_enable_puk_unlock_screen">true</bool>
+
+    <!-- Is the notification LED intrusive? Used to decide if there should be a disable option -->
+    <bool name="config_intrusiveNotificationLed">true</bool>
+
+    <!-- Base "touch slop" value used by ViewConfiguration as a
+         movement threshold where scrolling should begin.
+
+         Stingray's touch firmware has its own built-in slop that
+         prevents us from lowering this to the preferred value without
+         causing scroll startup to jump. -->
+    <dimen name="config_viewConfigurationTouchSlop">12dp</dimen>
+
+    <!-- Array of OEM specific USB mode override config.
+         OEM can override a certain USB mode depending on ro.bootmode.
+         Specify an array of below items to set override rule.
+         [bootmode]:[original USB mode]:[USB mode used]-->
+    <string-array translatable="false" name="config_oemUsbModeOverride">
+        <item>"bp-tools:mtp:acm,usbnet"</item>
+        <item>"bp-tools:mtp,adb:acm,usbnet,adb"</item>
+        <item>"bp-tools:ptp:acm,usbnet"</item>
+        <item>"bp-tools:ptp,adb:acm,usbnet,adb"</item>
+        <item>"bp-tools:rndis:rndis,acm,usbnet"</item>
+        <item>"bp-tools:rndis,adb:rndis,acm,usbnet,adb"</item>
+        <item>"factorycable:mtp:usbnet"</item>
+        <item>"factorycable:mtp,adb:usbnet,adb"</item>
+        <item>"factorycable:ptp:usbnet"</item>
+        <item>"factorycable:ptp,adb:usbnet,adb"</item>
+    </string-array>
+
+    <!-- Control the behavior when the user long presses the power button.
+            0 - Nothing
+            1 - Global actions menu
+            2 - Power off (with confirmation)
+    -->
+    <integer name="config_longPressOnPowerBehavior">2</integer>
 	
 </resources>
