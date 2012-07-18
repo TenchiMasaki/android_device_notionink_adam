@@ -39,6 +39,7 @@ PRODUCT_COPY_FILES := \
     device/notionink/adam/files/init.harmony.rc:root/init.harmony.rc \
     device/notionink/adam/files/init.harmony.usb.rc:root/init.harmony.usb.rc \
     device/notionink/adam/files/ueventd.harmony.rc:root/ueventd.harmony.rc \
+    device/notionink/adam/files/fstab.harmony:root/fstab.harmony \
     device/notionink/adam/files/bcmdhd.cal:system/etc/wifi/bcmdhd.cal \
     device/notionink/adam/files/nvram.txt:system/etc/wifi/nvram.txt
 
