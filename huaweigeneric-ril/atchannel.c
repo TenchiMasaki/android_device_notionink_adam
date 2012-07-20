@@ -52,8 +52,8 @@
 #define HANDSHAKE_TIMEOUT_MSEC 250
 
 #define LOGD ALOGD
-#define LOGD ALOGI
-#define LOGD ALOGE
+#define LOGI ALOGI
+#define LOGE ALOGE
 
 static pthread_t s_tid_reader;
 static int s_fd = -1;    /* fd of the AT channel */

@@ -60,8 +60,8 @@
 #endif
 
 #define LOGD ALOGD
-#define LOGD ALOGI
-#define LOGD ALOGE
+#define LOGI ALOGI
+#define LOGE ALOGE
 
 typedef enum {
     SIM_ABSENT = 0,

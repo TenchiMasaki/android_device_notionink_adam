@@ -11,8 +11,8 @@
 #define LOG_TAG "SMS_RIL"
 #include <utils/Log.h>
 #define LOGD ALOGD
-#define LOGD ALOGI
-#define LOGD ALOGE
+#define LOGI ALOGI
+#define LOGE ALOGE
 #else
 #define LOGD printf
 #define LOGE printf
