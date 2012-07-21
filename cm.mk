@@ -11,3 +11,5 @@ $(call inherit-product, device/notionink/adam/full_adam.mk)
 
 PRODUCT_NAME := cm_adam
 PRODUCT_DEVICE := adam
+
+TARGET_BOOTANIMATION_NAME := horizontal-1024x600
