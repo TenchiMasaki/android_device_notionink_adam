@@ -694,7 +694,7 @@ static char initializeCommon(void)
     setE2napState(-1);
 
     if (at_handshake() < 0) {
-        ALOG_FATAL("Handshake failed!");
+        LOG_FATAL("Handshake failed!");
         return 1;
     }
 
