@@ -79,7 +79,8 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     device/notionink/adam/files/ppp/ip-up:/system/etc/ppp/ip-up \
     device/notionink/adam/files/ppp/ip-down:/system/etc/ppp/ip-down \
-    device/notionink/adam/files/wwlan_select.sh:/system/bin/wwlan_select.sh
+    device/notionink/adam/files/wwlan_select.sh:/system/bin/wwlan_select.sh \
+    device/notionink/adam/files/rild:/system/bin/rild
    
 PRODUCT_PROPERTY_OVERRIDES := \
     wifi.interface=wlan0 \
