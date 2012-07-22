@@ -1990,7 +1990,6 @@ struct audio_module HAL_MODULE_INFO_SYM = {
         .tag = HARDWARE_MODULE_TAG,
 	.module_api_version = AUDIO_MODULE_API_VERSION_0_1,
 	.hal_api_version = HARDWARE_HAL_API_VERSION,
-        .version_minor = 0,
         .id = AUDIO_HARDWARE_MODULE_ID,
         .name = "Adam audio HW HAL",
         .author = "The Android Open Source Project",

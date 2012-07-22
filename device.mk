@@ -41,7 +41,7 @@ PRODUCT_COPY_FILES := \
     device/notionink/adam/files/ueventd.harmony.rc:root/ueventd.harmony.rc \
     device/notionink/adam/files/fstab.harmony:root/fstab.harmony \
     device/notionink/adam/files/bcmdhd.cal:system/etc/wifi/bcmdhd.cal \
-    device/notionink/adam/files/nvram.txt:system/etc/wifi/nvram.txt
+    device/notionink/adam/files/nvram.txt:system/etc/wifi/nvram.txt \
 
 # Modules
 PRODUCT_COPY_FILES += \
@@ -58,6 +58,14 @@ PRODUCT_COPY_FILES += \
 # Graphics
 PRODUCT_COPY_FILES += \
     device/notionink/adam/files/media_profiles.xml:system/etc/media_profiles.xml
+
+# Codecs
+PRODUCT_COPY_FILES += \
+     device/notionink/adam/files/media_codecs.xml:system/etc/media_codecs.xml
+
+# Audio policy configuration
+PRODUCT_COPY_FILES += \
+     device/notionink/adam/files/audio_policy.conf:system/etc/audio_policy.conf
 
 # Generic
 PRODUCT_COPY_FILES += \
@@ -88,6 +96,7 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
         audio.a2dp.default \
 	audio.primary.harmony \
+	audio.usb.default \
         libaudioutils
 
 # Harmony Hardware
