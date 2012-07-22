@@ -3,7 +3,7 @@ import init.harmony.usb.rc
 on early-init
     mount debugfs debugfs /sys/kernel/debug
 
-    export SECONDARY_STORAGE /storage/microsd1
+    export SECONDARY_STORAGE /storage/microsd
     export EXTERNAL_STORAGE /storage/sdcard0
     mkdir /storage 0050 system sdcard_r
     mkdir /storage/sdcard0 0000 system system
@@ -17,6 +17,7 @@ on early-init
     symlink /mnt/usbdrive1 /usbdrive1
     symlink /mnt/usbdrive2 /usbdrive2
     symlink /storage/sdcard1 /microsd
+    symlink /storage/sdcard1 /mnt/microsd
 
 on fs
     # Mount /system rw first to give the filesystem a chance to save a checkpoint
