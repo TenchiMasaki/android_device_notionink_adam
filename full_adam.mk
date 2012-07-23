@@ -15,11 +15,12 @@
 # Camera
 PRODUCT_PACKAGES := \
     Camera \
+    LegacyCamera \
     SpareParts \
     PQiToggle \
     Development \
-	Stk \
-	Mms
+    Stk \
+    Mms
 
 $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base.mk)
 
