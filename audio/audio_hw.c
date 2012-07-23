@@ -208,10 +208,6 @@ struct route_setting defaults[] = {
         .intval = 1,
     },
     {
-        .ctl_name = MIXER_AUXOUT_ENABLE,
-        .intval = 1,
-    },	
-    {
         .ctl_name = NULL,
     }
 };
