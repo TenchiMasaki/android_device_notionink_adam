@@ -396,10 +396,8 @@ struct stream_in {
     struct pcm_config pcm_config;	/* HW config being used */
     bool standby;
 
-    size_t buffer_size;				/* buffer size in bytes */
-    size_t frames_in;
-
-    int read_status;
+    int subsample_shift;			/* Subsampling factor (1<<shift), to emulate different submultiples of sampling rate .Only supported values are 0,1,2 */
+    int16_t* buffer;				/* Temporary buffer to make subsampling */
 
     struct audio_device *dev;
 };
@@ -469,6 +467,11 @@ static void do_in_standby(struct stream_in *in)
         pcm_close(in->pcm);
         in->pcm = NULL;
         adev->active_in = NULL;
+
+	if (in->buffer) {
+		free(in->buffer);
+		in->buffer = NULL;
+	}
 	
         in->standby = true;
     }
@@ -536,6 +539,11 @@ static int start_input_stream(struct stream_in *in)
         ALOGE("pcm_open(in) failed: %s", pcm_get_error(in->pcm));
         pcm_close(in->pcm);
         return -ENOMEM;
+    }
+
+    /* If needed, allocate the resample buffer */
+    if (in->subsample_shift) {
+	in->buffer = malloc(in->pcm_config.period_size * in->pcm_config.channels * sizeof(int16_t));
     }
 
 	adev->active_in = in;
@@ -870,7 +878,7 @@ static uint32_t in_get_sample_rate(const struct audio_stream *stream)
 {
     struct stream_in *in = (struct stream_in *)stream;
 	//ALOGD("in_get_sample_rate");
-    return in->pcm_config.rate;
+    return in->pcm_config.rate >> in->subsample_shift;
 }
 
 /* xface */
@@ -879,7 +887,7 @@ static int in_set_sample_rate(struct audio_stream *stream, uint32_t rate)
     struct stream_in *in = (struct stream_in *)stream;
 	ALOGD("in_set_sample_rate: %d",rate);
 	
-	if (rate == in->pcm_config.rate)
+	if (rate == (in->pcm_config.rate >> in->subsample_shift))
     return 0;
     return -ENOSYS;
 }
@@ -890,7 +898,7 @@ static size_t in_get_buffer_size(const struct audio_stream *stream)
     struct stream_in *in = (struct stream_in *)stream;
     size_t size;
 
-	ALOGD("in_get_buffer_size");
+	//ALOGD("in_get_buffer_size");
 	
     size = in->pcm_config.period_size;
     size = ((size + 15) / 16) * 16;
@@ -1048,18 +1056,82 @@ static ssize_t in_read(struct audio_stream_in *stream, void* buffer,
     if (ret < 0) {
 		ALOGE("in_read: Failed to start input stream");
         goto exit;
-	}
+    }
+
+    /* If subsampling, we need to read more samples using the temporary buffer */
+    if (in->subsample_shift) {
+		int16_t* outp = in_buffer;
+	
+		/* We must read in chunks ... */
+		unsigned int chunkstodo = 1 << in->subsample_shift;
+		do {
+			unsigned int frames_to_do = in_frames >> in->subsample_shift;
+		
+			/* Read requested samples, so we can subsample */
+			//ALOGD("in_read: subsampling: pcm_read: buf:%p, bufsz:%d",in->buffer, in_frames * frame_size);
+			ret = pcm_read(in->pcm, in->buffer, in_frames * frame_size);
+
+		/* We always capture 16bit stereo... Downsample...  */		
+			if (ret < 0) 
+				break;
+			ret = 0;
+			
+			/* If no frames to subsample, skip subsampling */
+			if (frames_to_do <= 0) 
+				break;
+		
+			//ALOGD("subsampling...");
+			/*
+			* Instead of writing zeroes here, we could trust the hardware
+			* to always provide zeroes when muted.
+			*/
+			if (ret == 0 && adev->mic_mute) {
+				memset(outp, 0, frames_to_do * 4);
+				outp += 2 * frames_to_do;
+			} else {
+				if (in->subsample_shift == 1) {
+					int16_t* inp = in->buffer;
+					do {
+						int c1 = *inp++;
+						int c2 = *inp++;
+						c1 += *inp++;
+						c2 += *inp++;
+						*outp++ = c1 >> 1;
+						*outp++ = c2 >> 1;
+					} while (--frames_to_do);
+				} else {
+					/* subsample shift == 2 */
+					int16_t* inp = in->buffer;
+					do {
+						int c1 = *inp++;
+						int c2 = *inp++;
+						c1 += *inp++;
+						c2 += *inp++;
+						c1 += *inp++;
+						c2 += *inp++;
+						c1 += *inp++;
+						c2 += *inp++;
+						*outp++ = c1 >> 2;
+						*outp++ = c2 >> 2;
+					} while (--frames_to_do);
+			}
+		}
+			//ALOGD("done...");
+
+		} while (--chunkstodo);	
+    } else {
 
 	ret = pcm_read(in->pcm, in_buffer, in_frames * frame_size);
-    if (ret > 0)
-        ret = 0;
+	if (ret > 0)
+          ret = 0;
 
-    /*
-     * Instead of writing zeroes here, we could trust the hardware
-     * to always provide zeroes when muted.
-     */
-    if (ret == 0 && adev->mic_mute)
-        memset(buffer, 0, bytes);
+	/*
+	* Instead of writing zeroes here, we could trust the hardware
+	* to always provide zeroes when muted.
+	*/
+    	if (ret == 0 && adev->mic_mute)
+          memset(buffer, 0, bytes);
+    }
 
 exit:
     if (ret < 0)
@@ -1260,16 +1332,11 @@ static size_t adev_get_input_buffer_size(const struct audio_hw_device *dev,
     size_t size;
 	ALOGD("adev_get_input_buffer_size: sample_rate: %d, format: %d, channel_count:%d", config->sample_rate, config->format, popcount(config->channel_mask));
 	
-    /*
-     * take resampling into account and return the closest majoring
-     * multiple of 16 frames, as audioflinger expects audio buffers to
-     * be a multiple of 16 frames
-     */
-    size = (pcm_config_in.period_size * config->sample_rate) / pcm_config_in.rate;
+    /* Note: We ignore the requested format... We will force our format */
+    size = pcm_config_in.period_size;
     size = ((size + 15) / 16) * 16;
 
-    return (size * popcount(config->channel_mask) *
-                audio_bytes_per_sample(config->format));
+    return size * pcm_config_in.channels * sizeof(int16_t);
 }
 
 /* xface */
@@ -1285,6 +1352,36 @@ static int adev_open_input_stream(struct audio_hw_device *dev,
 
 	ALOGD("adev_open_input_stream: channel_count:%d", popcount(config->channel_mask));
 	
+	/* Check if we support the requested format ... Also accept decimation of sampling frequencies in powers of 2 - We will downsample in sw*/
+	if (config->format != AUDIO_FORMAT_PCM_16_BIT ||
+		config->channel_mask != AUDIO_CHANNEL_IN_STEREO ||
+		( config->sample_rate !=  IN_SAMPLING_RATE && 
+		  config->sample_rate != (IN_SAMPLING_RATE>>1) &&
+		  config->sample_rate != (IN_SAMPLING_RATE>>2) )
+		) {
+		ALOGD("adev_open_input_stream: Unsupported format. Let AudioFlinger do the conversion by returning the acceptable format");
+
+		/* Suggest the record format to the framework, otherwise it crashes */
+		config->format = AUDIO_FORMAT_PCM_16_BIT;
+		config->channel_mask = AUDIO_CHANNEL_IN_STEREO;
+
+		/* But there is a catch here... AudioFlinger can't downsample to less than half
+		   the sampling rate... So we have to handle it somehow - We habe implemented a
+		   decimation by power of 2 filter ... Select the proper reported sampling frequency */
+		if (config->sample_rate >= (IN_SAMPLING_RATE>>1) ) {
+			config->sample_rate = IN_SAMPLING_RATE;	
+		} else if (config->sample_rate >= (IN_SAMPLING_RATE>>2) ) {
+			config->sample_rate = (IN_SAMPLING_RATE>>1);
+		} else {
+			config->sample_rate = (IN_SAMPLING_RATE>>2);
+		}
+		
+		/* Let audioflinger adopt our suggested rate */
+		return -EINVAL;
+	}
+
+	ALOGD("adev_open_input_stream: format accepted");
+
 	*stream_in = NULL;
 
     in = (struct stream_in *)calloc(1, sizeof(struct stream_in));
@@ -1309,12 +1406,17 @@ static int adev_open_input_stream(struct audio_hw_device *dev,
 
     in->dev = adev;
     in->standby = true;
-	
-	/* Suggest the record format to the framework, otherwise it crashes */
-	config->format = AUDIO_FORMAT_PCM_16_BIT;
-	config->channel_mask = AUDIO_CHANNEL_IN_STEREO;
-	config->sample_rate = IN_SAMPLING_RATE;
-	
+
+    /* Calculate the audio subsampling factor */
+    if (config->sample_rate == IN_SAMPLING_RATE) {
+	in->subsample_shift = 0;
+    } else if (config->sample_rate == (IN_SAMPLING_RATE>>1)) {
+	in->subsample_shift = 1;
+    } else {
+	in->subsample_shift = 2;
+    }
+    ALOGD("adev_open_input_stream: Using subsampling shift: %d",in->subsample_shift);
+
     memcpy(&in->pcm_config,&pcm_config_in,sizeof(in->pcm_config)); /* default PCM config */
 
     *stream_in = &in->stream;
