@@ -22,6 +22,9 @@ PRODUCT_PACKAGES := \
     Stk \
     Mms
 
+PRODUCT_COPY_FILES += \
+    device/notionink/adam/files/busybox:system/bin/busybox
+
 $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base.mk)
 
 # Inherit from ADAM device
@@ -36,3 +39,5 @@ PRODUCT_NAME := full_adam
 PRODUCT_DEVICE := adam
 PRODUCT_BRAND := NotionInk
 PRODUCT_MODEL := Notion Ink ADAM
+
+$(call inherit-product, device/notionink/adam/google_apps.mk)
