@@ -18,8 +18,8 @@ PRODUCT_PACKAGES := \
     SpareParts \
     PQiToggle \
     Development \
-	Stk \
-	Mms
+    Stk \
+    Mms
 
 $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base.mk)
 
@@ -35,3 +35,5 @@ PRODUCT_NAME := full_adam
 PRODUCT_DEVICE := adam
 PRODUCT_BRAND := NotionInk
 PRODUCT_MODEL := Notion Ink ADAM
+
+$(call inherit-product, device/notionink/adam/google_apps.mk)
