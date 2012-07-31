@@ -16,7 +16,7 @@
  */
 
 #define LOG_TAG "audio_hw_primary"
-#define LOG_NDEBUG 1
+#define LOG_NDEBUG 0
 
 #include <errno.h>
 #include <pthread.h>
@@ -81,11 +81,11 @@
 #define OUT_PERIOD_SIZE 880
 #define OUT_SHORT_PERIOD_COUNT 2
 #define OUT_LONG_PERIOD_COUNT 8
-#define OUT_SAMPLING_RATE 44100
+#define OUT_SAMPLING_RATE 48000
 
 #define IN_PERIOD_SIZE 1024
 #define IN_PERIOD_COUNT 4
-#define IN_SAMPLING_RATE 44100
+#define IN_SAMPLING_RATE 48000
 
 #define SCO_PERIOD_SIZE 256
 #define SCO_PERIOD_COUNT 4
