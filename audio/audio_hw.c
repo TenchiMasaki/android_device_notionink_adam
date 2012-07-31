@@ -141,7 +141,7 @@ struct route_setting defaults[] = {
     /* general */
     {
         .ctl_name = MIXER_PCM_PLAYBACK_VOLUME,
-        .intval = PERC_TO_PCM_VOLUME(1),
+        .intval = 20,
     },
     {
 	.ctl_name = MIXER_PCM_CAPTURE_VOLUME,
@@ -153,7 +153,7 @@ struct route_setting defaults[] = {
     },
     {
         .ctl_name = MIXER_SPEAKER_PLAYBACK_VOLUME,
-        .intval = PERC_TO_SPEAKER_VOLUME(1),
+	.intval = 20,
     },
     {
         .ctl_name = MIXER_MIC_CAPTURE_VOLUME,
@@ -173,7 +173,7 @@ struct route_setting defaults[] = {
     },
     {
         .ctl_name = INTERNAL_SPEAKER_SWITCH,
-        .intval = 0,
+        .intval = 1,
     },
     {
         .ctl_name = MIXER_MIC_LEFT_CAPTURE_SWITCH,
