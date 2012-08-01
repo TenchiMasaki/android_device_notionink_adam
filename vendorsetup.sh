@@ -21,6 +21,7 @@
 # function: add_lunch_combo generic-eng
 export USE_CCACHE=1
 add_lunch_combo full_adam-userdebug
+add_lunch_combo cm_adam-userdebug
 echo ""
 echo "Patching Adam Workspace..."
 echo ""
