@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Camera
 PRODUCT_PACKAGES := \
     Camera \
     LegacyCamera \
@@ -20,10 +19,13 @@ PRODUCT_PACKAGES := \
     PQiToggle \
     Development \
     Stk \
-    Mms
+    Mms \
+    Superuser \
+    Term
 
 PRODUCT_COPY_FILES += \
     device/notionink/adam/files/busybox:system/bin/busybox
+    device/notionink/adam/files/su:system/xbin/su
 
 $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base.mk)
 
