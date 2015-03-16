@@ -1,4 +1,6 @@
-Here's my adam device tree for android 4.0.1 ASOP.
+Here's Adam device tree for android Omni 5.1.
+
+Make sure you have adam_common tree downloaded
 
 Copy to android/device/notionink/adam/
 
@@ -10,7 +12,7 @@ Shell Type: ". build/envsetup.sh"
 
 Let it finish.
 
-Shell Type: "lunch full_adam-userdebug"
+Shell Type: "lunch omni_adam-userdebug"
 
 Wait for it to get done.
 

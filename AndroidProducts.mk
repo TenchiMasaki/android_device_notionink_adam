@@ -14,4 +14,4 @@
 # limitations under the License.
 #
 PRODUCT_MAKEFILES := \
-    $(LOCAL_DIR)/full_adam.mk 
+    device/notionink/adam/omni_adam.mk
