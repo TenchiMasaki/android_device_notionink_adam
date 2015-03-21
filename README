@@ -1,4 +1,4 @@
-Here's Adam device tree for android Omni 5.1.
+Here's Adam device tree for android Paranoid Android 5.1.
 
 Make sure you have adam_common tree downloaded
 
@@ -12,7 +12,7 @@ Shell Type: ". build/envsetup.sh"
 
 Let it finish.
 
-Shell Type: "lunch omni_adam-userdebug"
+Shell Type: "lunch pa_adam-userdebug"
 
 Wait for it to get done.
 

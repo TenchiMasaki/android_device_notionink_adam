@@ -21,6 +21,9 @@ PRODUCT_PACKAGES := \
 
 DEVICE_PACKAGE_OVERLAYS += device/notionink/adam/overlay
 
+# OVERLAY_TARGET adds overlay asset source
+OVERLAY_TARGET := pa_hdpi
+
 # Inherit from ADAM common device tree
 $(call inherit-product, device/notionink/adam_common/device-common.mk)
 
@@ -29,13 +32,13 @@ $(call inherit-product, device/common/gps/gps_us_supl.mk)
 
 $(call inherit-product-if-exists, vendor/notionink/adam/device-vendor.mk)
 
-PRODUCT_NAME := omni_adam
+PRODUCT_NAME := pa_adam
 PRODUCT_DEVICE := adam
 PRODUCT_BRAND := NotionInk
 PRODUCT_MODEL := Notion Ink ADAM
 # Release name
 PRODUCT_RELEASE_NAME := NIAdam
-PRODUCT_PROPERTY_OVERRIDES += ro.buildzipid=omni.adam.$(shell date +%m%d%y).$(shell date +%H%M%S)
+PRODUCT_PROPERTY_OVERRIDES += ro.buildzipid=pa.adam.$(shell date +%m%d%y).$(shell date +%H%M%S)
 
 # Inherit some common CM stuff.
 #$(call inherit-product, vendor/cm/config/common_full_tablet_wifionly.mk)
@@ -44,4 +47,4 @@ PRODUCT_PROPERTY_OVERRIDES += ro.buildzipid=omni.adam.$(shell date +%m%d%y).$(sh
 $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base.mk)
 
 # Inherit from our custom product configuration
-$(call inherit-product, vendor/omni/config/common_tablet.mk)
+# $(call inherit-product, vendor/pa/config/main.mk)
