@@ -2,10 +2,10 @@ project frameworks/av/
 diff --git a/include/media/AudioTrack.h b/include/media/AudioTrack.h
 old mode 100644
 new mode 100755
-index fd51b8f..95b59e7
+index 9d15caf..38911ff
 --- a/include/media/AudioTrack.h
 +++ b/include/media/AudioTrack.h
-@@ -218,6 +218,19 @@ public:
+@@ -226,6 +226,19 @@ public:
                                      pid_t pid = -1,
                                      const audio_attributes_t* pAttributes = NULL);
  
@@ -25,7 +25,7 @@ index fd51b8f..95b59e7
      /* Terminates the AudioTrack and unregisters it from AudioFlinger.
       * Also destroys all resources associated with the AudioTrack.
       */
-@@ -266,28 +279,48 @@ public:
+@@ -270,28 +283,46 @@ public:
       * an uninitialized AudioTrack produces undefined results.
       * See set() method above for possible return codes.
       */
@@ -47,12 +47,12 @@ index fd51b8f..95b59e7
 +#endif
  
      /* getters, see constructors and set() */
--
+ 
 +#ifdef BOARD_OMX_NEEDS_LEGACY_AUDIO
 +            audio_stream_type_t streamType() const;
 +            audio_format_t format() const;
 +#else
-             audio_stream_type_t streamType() const;
+             audio_stream_type_t streamType() const { return mStreamType; }
              audio_format_t format() const   { return mFormat; }
 +#endif
  
@@ -61,22 +61,21 @@ index fd51b8f..95b59e7
       * channelCount is determined from channelMask, and bit depth comes from format.
       * For non-linear formats, the frame size is typically 1 byte.
       */
-+
 +#ifdef BOARD_OMX_NEEDS_LEGACY_AUDIO
 +            size_t      frameSize() const;
 +            uint32_t    channelCount() const;
 +            uint32_t    frameCount() const;
 +#else
              size_t      frameSize() const   { return mFrameSize; }
- 
+-
              uint32_t    channelCount() const { return mChannelCount; }
-             size_t      frameCount() const  { return mFrameCount; }
+-            size_t      frameCount() const  { return mFrameCount; }
++            uint32_t    frameCount() const  { return mFrameCount; }
 +#endif
-+ 
  
      /* Return the static buffer specified in constructor or set(), or 0 for streaming mode */
              sp<IMemory> sharedBuffer() const { return mSharedBuffer; }
-@@ -471,7 +504,11 @@ public:
+@@ -475,7 +506,11 @@ public:
       * Returned value:
       *  AudioTrack session ID.
       */
@@ -88,7 +87,7 @@ index fd51b8f..95b59e7
  
      /* Attach track auxiliary output to specified effect. Use effectId = 0
       * to detach track from effect.
-@@ -555,7 +592,8 @@ public:
+@@ -559,7 +594,8 @@ public:
       * false for the method to return immediately without waiting to try multiple times to write
       * the full content of the buffer.
       */
@@ -101,6 +100,24 @@ index fd51b8f..95b59e7
 diff --git a/include/media/stagefright/MediaBufferGroup.h b/include/media/stagefright/MediaBufferGroup.h
 old mode 100644
 new mode 100755
+index a006f7f..2c0bf40
+--- a/include/media/stagefright/MediaBufferGroup.h
++++ b/include/media/stagefright/MediaBufferGroup.h
+@@ -34,12 +34,13 @@ public:
+ 
+     void add_buffer(MediaBuffer *buffer);
+ 
++    status_t acquire_buffer( MediaBuffer **out);
+     // If nonBlocking is false, it blocks until a buffer is available and
+     // passes it to the caller in *buffer, while returning OK.
+     // The returned buffer will have a reference count of 1.
+     // If nonBlocking is true and a buffer is not immediately available,
+     // buffer is set to NULL and it returns WOULD_BLOCK.
+-    status_t acquire_buffer(MediaBuffer **buffer, bool nonBlocking = false);
++    status_t acquire_buffer(MediaBuffer **buffer, bool nonBlocking);
+ 
+ protected:
+     virtual void signalBufferReturned(MediaBuffer *buffer);
 diff --git a/media/libmedia/Android.mk b/media/libmedia/Android.mk
 index a2e0909..89595a3 100644
 --- a/media/libmedia/Android.mk

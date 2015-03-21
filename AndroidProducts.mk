@@ -14,4 +14,4 @@
 # limitations under the License.
 #
 PRODUCT_MAKEFILES := \
-    device/notionink/adam/omni_adam.mk
+    device/notionink/adam/liquid.mk

@@ -1,4 +1,5 @@
-Here's Adam device tree for android Omni 5.1.
+
+Here's Adam 3G device tree for android LiquidSmooth Lollipop.
 
 Make sure you have adam_common tree downloaded
 
@@ -12,9 +13,10 @@ Shell Type: ". build/envsetup.sh"
 
 Let it finish.
 
-Shell Type: "lunch omni_adam-userdebug"
+Shell Type: "lunch liquid_adam-userdebug"
 
 Wait for it to get done.
 
 Then type: "time make -j16" (replace 16 with whatever your machine can handle.)
 
+To make update zip type: "make liquid"
